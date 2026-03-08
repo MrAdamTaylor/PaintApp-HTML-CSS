@@ -1,3 +1,19 @@
+//Функция для сохранения
+function get_result_from_cookie() {
+	let cookies = document.cookie.split('; ')
+    console.log(cookies)
+    for (let i = 0; i < cookies.length; i += 1) {
+        let cookie = cookies[i].split('=')
+        console.log(cookie)
+        if (cookie[0] == 'pixel-result') {
+            return cookie[1]
+        }
+    }
+    return '0' * 450
+}
+
+
+
 // Флаги и значения
 var CURRENT_COLOR = "rgb(255, 102, 46)"; // Начальный цвет (красный)
 var DEFAULT_COLOR = "rgb(62, 62, 62)";   // Цвет по умолчанию (темно-серый)
@@ -25,12 +41,26 @@ document.addEventListener('mouseup', function() {
 
 // Заполняем поле клетками
 let field = document.querySelector('.field')
-for (let i = 0; i < 450; i += 1) {
-    let cell = document.createElement('div')
-    cell.classList.add('cell')
-	cell.setAttribute('id', `${i}`) // Добавляем ID для анимации
-    field.appendChild(cell)
+let temp_result = get_result_from_cookie()
+if(temp_result != '0')
+{
+	for (let i = 0; i < 450; i += 1) {
+    	let cell = document.createElement('div')
+        cell.classList.add('cell')
+        cell.setAttribute('id', `${i}`)
+        cell.style.backgroundColor = COLORS[parseInt(temp_result[i])]
+        field.appendChild(cell)
+	}
 }
+else {
+	for (let i = 0; i < 450; i += 1) {
+		let cell = document.createElement('div')
+		cell.classList.add('cell')
+		cell.setAttribute('id', `${i}`) // Добавляем ID для анимации
+		field.appendChild(cell)
+	}
+}
+
 
 // Каждой ячейке добавляем обработчики событий
 let cells = document.querySelectorAll('.cell')
