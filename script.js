@@ -1,6 +1,6 @@
-//Функция для сохранения
+// Подгрузка из cookie
 function get_result_from_cookie() {
-	let cookies = document.cookie.split('; ')
+    let cookies = document.cookie.split('; ')
     console.log(cookies)
     for (let i = 0; i < cookies.length; i += 1) {
         let cookie = cookies[i].split('=')
@@ -11,8 +11,6 @@ function get_result_from_cookie() {
     }
     return '0' * 450
 }
-
-
 
 // Флаги и значения
 var CURRENT_COLOR = "rgb(255, 102, 46)"; // Начальный цвет (красный)
@@ -42,17 +40,15 @@ document.addEventListener('mouseup', function() {
 // Заполняем поле клетками
 let field = document.querySelector('.field')
 let temp_result = get_result_from_cookie()
-if(temp_result != '0')
-{
-	for (let i = 0; i < 450; i += 1) {
-    	let cell = document.createElement('div')
+if (temp_result != '0') {
+    for (let i = 0; i < 450; i+=1) {
+        let cell = document.createElement('div')
         cell.classList.add('cell')
         cell.setAttribute('id', `${i}`)
         cell.style.backgroundColor = COLORS[parseInt(temp_result[i])]
         field.appendChild(cell)
-	}
-}
-else {
+    }
+} else {
 	for (let i = 0; i < 450; i += 1) {
 		let cell = document.createElement('div')
 		cell.classList.add('cell')
@@ -60,7 +56,6 @@ else {
 		field.appendChild(cell)
 	}
 }
-
 
 // Каждой ячейке добавляем обработчики событий
 let cells = document.querySelectorAll('.cell')
@@ -150,4 +145,53 @@ document.querySelector('.fill-tool').addEventListener('click', function() {
     
     document.querySelector('.selected').classList.remove('selected')
     this.classList.add('selected')
+})
+
+// Определяем массив цветов в том же порядке, что и в палитре
+var COLORS = [
+    "rgb(62, 62, 62)",      // 0 - цвет по умолчанию (ластик)
+    "rgb(255, 102, 46)",    // 1 - красный
+    "rgb(26, 218, 84)",     // 2 - зеленый
+    "rgb(83, 15, 255)",     // 3 - синий
+    "rgb(255, 236, 26)",    // 4 - желтый
+    "rgb(142, 229, 255)"    // 5 - голубой
+];
+
+// Сохранение в cookie каждую минуту
+setInterval(function() {
+    let result = '';
+    let temp_cells = document.querySelectorAll('.cell');
+    
+    for (let i = 0; i < temp_cells.length; i += 1) {
+        let cell = temp_cells[i];
+        let color = cell.style.backgroundColor;
+        
+        // Находим индекс цвета в массиве COLORS
+        let colorIndex = "0"; // По умолчанию (ластик)
+        for (let j = 0; j < COLORS.length; j++) {
+            if (color === COLORS[j]) {
+                colorIndex = j.toString();
+                break;
+            }
+        }
+        
+        result += colorIndex;
+    }
+    document.cookie = `pixel-result=${result};max-age=100000`;
+}, 60000);
+
+// Сохранение результата на компьютер в виде картинки с помощью dom-to-image
+document.querySelector('.save-tool').addEventListener('click', function() {
+    domtoimage.toJpeg(field, {quality: 2})
+    .then(function (dataUrl) {
+        var img = new Image();
+        img.src = dataUrl;
+        let link = document.createElement('a');
+        link.download = 'pixel.jpg';
+        link.href = dataUrl;
+        link.click();
+    })
+    .catch(function (error) {
+        console.error('oops, something went wrong!', error);
+    });
 })
