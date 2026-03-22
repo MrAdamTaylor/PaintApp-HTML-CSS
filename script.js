@@ -178,7 +178,7 @@ setInterval(function() {
         result += colorIndex;
     }
     document.cookie = `pixel-result=${result};max-age=100000`;
-}, 60000);
+}, 6000);
 
 // Сохранение результата на компьютер в виде картинки с помощью dom-to-image
 document.querySelector('.save-tool').addEventListener('click', function() {
